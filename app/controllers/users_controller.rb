@@ -9,7 +9,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-	@microposts = @user.microposts.paginate(page: params[:page] )
+    @microposts = @user.microposts.paginate(page: params[:page] )
   end
 
   def new
@@ -44,19 +44,33 @@ class UsersController < ApplicationController
 	flash[:success] = "User destroyed."
 	redirect_to users_url
   end
+
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.followed_users.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
+  end
     
   private
 
     def user_params
-	  params.require(:user).permit(:name, :email, :password,:password_confirmation)
-	end
+      params.require(:user).permit(:name, :email, :password,:password_confirmation)
+    end
 
-	def correct_user
-	  @user = User.find(params[:id])
-	  redirect_to(root_path) unless current_user?(@user)
-	end
+    def correct_user
+      @user = User.find(params[:id])
+      redirect_to(root_path) unless current_user?(@user)
+    end
 
-	def admin_user
-	  redirect_to(root_path) unless current_user.admin?
-	end
+    def admin_user
+      redirect_to(root_path) unless current_user.admin?
+    end
 end
